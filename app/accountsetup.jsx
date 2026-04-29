@@ -138,9 +138,9 @@ const accountsetup = () => {
             />
           )}
 
-          <TouchableOpacity style={styles.ContinueBtn}>
+          <TouchableOpacity style={styles.ContinueBtn} onPress={() => router.push("/(tabs)/home")}>
             <Text style={styles.Btntext}>Continue</Text>
-            {/* add navigation later  */}
+           
           </TouchableOpacity>
 
         </View>
