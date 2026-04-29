@@ -1,68 +1,151 @@
-import { StyleSheet, Text, TouchableOpacity, View, Dimensions, Image, TextInput } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, TouchableOpacity, View, Dimensions, Image, TextInput, ScrollView } from 'react-native'
+import React, { useState } from 'react'
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, {UseState} from 'react'
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const { width, height } = Dimensions.get("window");
+
 const Defaultprofile = require('../assets/images/defaultavatar.png')
 const PersonInfoIcon = require('../assets/images/personediticon.png')
 
-
-
 const accountsetup = () => {
+
   const router = useRouter();
+
+  const [Phone, setPhone] = useState('');
+  const [Fname, setFname] = useState('');
+  const [Lname, setLname] = useState('');
+  const [Gender, setGender] = useState('');
+  const [DOB, setDOB] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const handlePhoneChange = (text) => {
+    const cleaned = text.replace(/[^0-9]/g, '');
+    if (cleaned.length <= 11) {
+      setPhone(cleaned);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      
-      {/* Header */}
-      <View style={styles.card}> 
-        <Text style={styles.Header}>Profile Setup</Text>
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
 
-      {/* forda profile pic and text  */}
-      <View style={styles.avatarCard}> 
-        
-        {/* profayl */}
-        <View style={styles.profileWrapper}>
-          <Image source={Defaultprofile} style={styles.profileImage} />
+        {/* Header */}
+        <View style={styles.card}>
+          <Text style={styles.Header}>Profile Setup</Text>
+        </View>
 
-          <TouchableOpacity style={styles.addPhotoBtn}> 
-            <Ionicons name="add" size={32} color="#CDD1E0" />
+        {/* Avatar */}
+        <View style={styles.avatarCard}>
+          <View style={styles.profileWrapper}>
+            <Image source={Defaultprofile} style={styles.profileImage} />
+            <TouchableOpacity style={styles.addPhotoBtn}>
+              <Ionicons name="add" size={width * 0.06} color="#CDD1E0" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.InfoContainer}>
+            <Text style={styles.title}>
+              Lets finish setting up your profile!
+            </Text>
+            <Text style={styles.subtitle}>
+              Tell us more about yourself!
+            </Text>
+          </View>
+        </View>
+
+        {/* Personal Info */}
+        <View style={styles.InfoHeader}>
+
+          <View style={styles.TextHeading}>
+            <Image source={PersonInfoIcon} style={styles.InfoIcon} />
+            <Text style={styles.headerText}>Personal Information</Text>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Phone */}
+          <Text style={styles.infoLabel}>Phone Number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Phone Number"
+            value={Phone}
+            onChangeText={handlePhoneChange}
+            keyboardType="phone-pad"
+            maxLength={11}
+          />
+
+          {/* First Name */}
+          <Text style={styles.infoLabel}>First Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="First Name"
+            value={Fname}
+            onChangeText={setFname}
+          />
+
+          {/* Last Name */}
+          <Text style={styles.infoLabel}>Last Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Last Name"
+            value={Lname}
+            onChangeText={setLname}
+          />
+
+          {/* Gender */}
+          <Text style={styles.infoLabel}>Gender</Text>
+          <View style={styles.pickerWrapper}>
+            <Picker
+              selectedValue={Gender}
+              onValueChange={(itemValue) => setGender(itemValue)}
+              mode="dropdown"
+              style={styles.picker}
+            >
+              <Picker.Item label="Male" value="male" />
+              <Picker.Item label="Female" value="female" />
+            </Picker>
+          </View>
+
+          {/* DOB */}
+          <Text style={styles.infoLabel}>Date of Birth</Text>
+
+          <TouchableOpacity
+            style={styles.calendar}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Ionicons name="calendar-outline" size={width * 0.05} color="#3A3A3B" />
+            <Text style={styles.calendarText}>
+              {DOB
+                ? `${(DOB.getMonth() + 1).toString().padStart(2, '0')}/${DOB.getDate().toString().padStart(2, '0')}/${DOB.getFullYear()}`
+                : "Open Calendar"}
+            </Text>
           </TouchableOpacity>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={DOB || new Date()}
+              mode="date"
+              display="calendar"
+              maximumDate={new Date()}
+              onValueChange={(event, selectedDate) => {
+                setShowDatePicker(false);
+                if (selectedDate) setDOB(selectedDate);
+              }}
+            />
+          )}
+
+          <TouchableOpacity style={styles.ContinueBtn}>
+            <Text style={styles.Btntext}>Continue</Text>
+            {/* add navigation later  */}
+          </TouchableOpacity>
+
         </View>
 
-        {/* text */}
-        <View style={styles.InfoContainer}> 
-          <Text style={styles.title}>
-            Lets finish setting up your profile!
-          </Text>
-          <Text style={styles.subtitle}>
-            Tell us more about yourself!
-          </Text>
-        </View>
-
-      </View>
-
-      {/* forda personal Information */}
-      <View style={styles.InfoHeader}> 
-        
-        <View style={styles.TextHeading}> 
-          <Image source={PersonInfoIcon} style={styles.InfoIcon} /> 
-          <Text style={styles.headerText}>Personal Information</Text>
-        </View>
-
-        <View style={styles.divider} />
-        {/* forda personal information inputs */}
-        <TextInput placeholder="Contact Number" placeholderTextColor="#aaa"
-                    style={[styles.input, {
-                      padding: height * 0.018,
-                      borderRadius: width * 0.03
-                    }]} />
-      </View>
-
+      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -70,7 +153,6 @@ const accountsetup = () => {
 export default accountsetup
 
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     backgroundColor: "#D6DAE8",
@@ -80,6 +162,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: width * 0.06,
     color: "#273342",
+    fontWeight: "600",
   },
 
   card: {
@@ -87,16 +170,14 @@ const styles = StyleSheet.create({
     borderRadius: width * 0.03,
     padding: width * 0.04,
     alignItems: "center",
-    margin: width * 0.05,
-    shadowColor: "#333F6F",
-    shadowRadius: width * 0.02,
-    elevation: 10,
+    margin: width * 0.04,
+    elevation: 6,
   },
 
   avatarCard: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: width * 0.05,
+    marginHorizontal: width * 0.04,
     marginTop: height * 0.01,
   },
 
@@ -105,23 +186,21 @@ const styles = StyleSheet.create({
   },
 
   profileImage: {
-    width: width * 0.32,
-    height: width * 0.32,
-    borderRadius: (width * 0.32) / 2,
+    width: width * 0.28,
+    height: width * 0.28,
+    borderRadius: width * 0.14,
     borderWidth: 2,
     borderColor: "#8E94A3",
   },
 
   addPhotoBtn: {
     position: "absolute",
-    bottom: -4,
-    right: -4,
-    width: width * 0.12,
-    height: width * 0.12,
+    bottom: 0,
+    right: 0,
+    width: width * 0.1,
+    height: width * 0.1,
     backgroundColor: "#8E94A3",
-    borderRadius: (width * 0.12) / 2,
-    borderColor: "#CDD1E0",
-    borderWidth: 2,
+    borderRadius: width * 0.05,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -129,17 +208,16 @@ const styles = StyleSheet.create({
   InfoContainer: {
     flex: 1,
     marginLeft: width * 0.04,
-    justifyContent: "center",
   },
 
   title: {
-    fontSize: width * 0.055,
+    fontSize: width * 0.045,
     fontWeight: "bold",
     color: "#273342",
   },
 
   subtitle: {
-    fontSize: width * 0.035,
+    fontSize: width * 0.032,
     color: "#6E7384",
     marginTop: 4,
   },
@@ -148,10 +226,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#E9ECF2",
     borderRadius: width * 0.03,
     padding: width * 0.04,
-    margin: width * 0.05,
-    shadowColor: "#333F6F",
-    shadowRadius: width * 0.02,
-    elevation: 10,
+    margin: width * 0.04,
+    elevation: 6,
   },
 
   TextHeading: {
@@ -160,7 +236,7 @@ const styles = StyleSheet.create({
   },
 
   headerText: {
-    fontSize: width * 0.045,
+    fontSize: width * 0.042,
     fontWeight: "600",
     marginLeft: width * 0.02,
     color: "#2C2C2C",
@@ -173,10 +249,67 @@ const styles = StyleSheet.create({
   },
 
   divider: {
-    marginTop: width * 0.03,
+    marginTop: height * 0.01,
     height: 1,
     backgroundColor: "#D1D1D1",
     width: "100%",
   },
 
+  infoLabel: {
+    marginTop: height * 0.015,
+    marginBottom: 5,
+    fontSize: width * 0.035,
+    fontWeight: "600",
+    color: "#273342",
+  },
+
+  input: {
+    backgroundColor: "#D2D6E0",
+    borderRadius: width * 0.02,
+    padding: width * 0.035,
+    fontSize: width * 0.035,
+    color: "#3A3A3B",
+  },
+
+  pickerWrapper: {
+    backgroundColor: "#D2D6E0",
+    borderRadius: width * 0.02,
+    overflow: "hidden",
+    marginTop: 5,
+  },
+
+  picker: {
+    height: height * 0.06,
+    width: "100%",
+  },
+
+  calendar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#D2D6E0",
+    borderRadius: width * 0.02,
+    padding: width * 0.035,
+    marginTop: 5,
+    gap: 10,
+  },
+
+  calendarText: {
+    fontSize: width * 0.035,
+    color: "#3A3A3B",
+  },
+
+  ContinueBtn: {
+    backgroundColor: "#DE2226",
+    padding: width * 0.035,
+    borderRadius: width * 0.02,
+    marginTop: 20,
+    elevation: 3,
+  },
+
+  Btntext: { 
+    textAlign: "center",
+    color: "#fff",
+    fontSize: width * 0.04,
+    fontWeight: "bold",
+  },
 });
