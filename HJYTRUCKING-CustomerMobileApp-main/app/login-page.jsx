@@ -62,7 +62,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         {/* Button */}
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => router.push("/(tabs)/home")}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
